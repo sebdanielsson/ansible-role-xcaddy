@@ -1,0 +1,64 @@
+---
+- name: Stop Caddy service
+  become: true
+  ansible.builtin.systemd_service:
+    name: caddy
+    state: stopped
+  failed_when: false
+
+- name: Disable Caddy service
+  become: true
+  ansible.builtin.systemd_service:
+    name: caddy
+    enabled: false
+  failed_when: false
+
+- name: Remove Caddy systemd service unit
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/caddy.service
+    state: absent
+
+- name: Reload systemd daemon
+  become: true
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: Remove Caddy binary
+  become: true
+  ansible.builtin.file:
+    path: '{{ xcaddy_bin_path }}'
+    state: absent
+
+- name: Remove Caddy configuration directory
+  become: true
+  ansible.builtin.file:
+    path: '{{ xcaddy_config_dir }}'
+    state: absent
+
+- name: Remove Caddy data directory
+  become: true
+  ansible.builtin.file:
+    path: '{{ xcaddy_data_dir }}'
+    state: absent
+
+- name: Remove Caddy user
+  become: true
+  ansible.builtin.user:
+    name: '{{ xcaddy_user }}'
+    state: absent
+    remove: true
+
+- name: Remove Caddy group
+  become: true
+  ansible.builtin.group:
+    name: '{{ xcaddy_group }}'
+    state: absent
+
+- name: Include Debian family uninstall tasks
+  ansible.builtin.include_tasks: apt/uninstall.yml
+  when: ansible_facts.os_family == 'Debian'
+
+- name: Include generic uninstall tasks
+  ansible.builtin.include_tasks: generic/uninstall.yml
+  when: ansible_facts.os_family != 'Debian'

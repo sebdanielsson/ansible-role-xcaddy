@@ -1,0 +1,19 @@
+---
+- name: Install Caddy with xcaddy
+  when: xcaddy_state == "present" or xcaddy_state == "latest"
+  block:
+    - name: Include OS-specific installation tasks
+      ansible.builtin.include_tasks: install.yml
+
+    - name: Build Caddy with xcaddy
+      ansible.builtin.include_tasks: build.yml
+
+    - name: Configure Caddy
+      ansible.builtin.include_tasks: configure.yml
+
+    - name: Configure Caddy service
+      ansible.builtin.include_tasks: service.yml
+
+- name: Uninstall Caddy
+  when: xcaddy_state == "absent"
+  ansible.builtin.include_tasks: uninstall.yml

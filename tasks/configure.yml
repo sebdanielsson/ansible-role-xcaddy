@@ -1,0 +1,58 @@
+---
+- name: Create Caddy group
+  ansible.builtin.group:
+    name: '{{ xcaddy_group }}'
+    system: true
+    state: present
+  become: true
+
+- name: Create Caddy user
+  ansible.builtin.user:
+    name: '{{ xcaddy_user }}'
+    group: '{{ xcaddy_group }}'
+    home: '{{ xcaddy_data_dir }}'
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: true
+    state: present
+  become: true
+
+- name: Create Caddy configuration directory
+  ansible.builtin.file:
+    path: '{{ xcaddy_config_dir }}'
+    state: directory
+    owner: '{{ xcaddy_user }}'
+    group: '{{ xcaddy_group }}'
+    mode: '0755'
+  become: true
+
+- name: Create Caddy data directory
+  ansible.builtin.file:
+    path: '{{ xcaddy_data_dir }}'
+    state: directory
+    owner: '{{ xcaddy_user }}'
+    group: '{{ xcaddy_group }}'
+    mode: '0750'
+  become: true
+
+- name: Deploy Caddyfile from content
+  ansible.builtin.copy:
+    content: '{{ xcaddy_caddyfile_content }}'
+    dest: '{{ xcaddy_caddyfile_path }}'
+    owner: '{{ xcaddy_user }}'
+    group: '{{ xcaddy_group }}'
+    mode: '0644'
+  become: true
+  when: xcaddy_caddyfile_content | length > 0
+  notify: Reload Caddy
+
+- name: Deploy Caddyfile from template
+  ansible.builtin.template:
+    src: '{{ xcaddy_caddyfile_template }}'
+    dest: '{{ xcaddy_caddyfile_path }}'
+    owner: '{{ xcaddy_user }}'
+    group: '{{ xcaddy_group }}'
+    mode: '0644'
+  become: true
+  when: xcaddy_caddyfile_template | length > 0
+  notify: Reload Caddy

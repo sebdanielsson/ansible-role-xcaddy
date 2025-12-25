@@ -1,0 +1,64 @@
+---
+# State of the xcaddy role: present, latest, or absent
+xcaddy_state: present
+
+# Caddy version to build (e.g., "v2.8.4" or "latest")
+xcaddy_caddy_version: latest
+
+# List of Caddy modules to include in the build
+# Example:
+#   xcaddy_modules:
+#     - github.com/caddy-dns/cloudflare
+#     - github.com/caddyserver/transform-encoder
+xcaddy_modules: []
+
+# Caddyfile content (raw string)
+# If set, this content will be written to the Caddyfile
+# Example:
+#   xcaddy_caddyfile_content: |
+#     :80 {
+#       respond "Hello, World!"
+#     }
+xcaddy_caddyfile_content: ''
+
+# Caddyfile template path (relative to playbook or role templates)
+# If set, this template will be used instead of xcaddy_caddyfile_content
+# Example:
+#   xcaddy_caddyfile_template: "my_caddyfile.j2"
+xcaddy_caddyfile_template: ''
+
+# Whether to enable the Caddy service at boot
+xcaddy_service_enabled: true
+
+# Whether to start the Caddy service after configuration
+xcaddy_service_started: true
+
+# User and group for the Caddy service
+xcaddy_user: caddy
+xcaddy_group: caddy
+
+# Path to install the Caddy binary
+xcaddy_bin_path: /usr/local/bin/caddy
+
+# Directory for Caddy configuration files
+xcaddy_config_dir: /etc/caddy
+
+# Path to the Caddyfile
+xcaddy_caddyfile_path: /etc/caddy/Caddyfile
+
+# Directory for Caddy data (certificates, etc.)
+xcaddy_data_dir: /var/lib/caddy
+
+# Path to xcaddy binary (set automatically based on install method)
+xcaddy_bin: xcaddy
+
+# Build directory for xcaddy (temporary)
+xcaddy_build_dir: /tmp/xcaddy-build
+
+# Go module proxy URL (uses system GOPROXY if set, otherwise defaults to official proxy)
+xcaddy_goproxy: "{{ lookup('env', 'GOPROXY') | default('https://proxy.golang.org,direct', true) }}"
+
+# APT repository settings (Debian family only)
+# Override these for enterprise environments with internal mirrors
+xcaddy_apt_gpg_url: https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key
+xcaddy_apt_repo_url: https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian

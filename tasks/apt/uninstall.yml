@@ -1,0 +1,12 @@
+---
+- name: Uninstall xcaddy
+  become: true
+  ansible.builtin.apt:
+    name: xcaddy
+    state: absent
+
+- name: Remove xcaddy repository
+  become: true
+  ansible.builtin.deb822_repository:
+    name: caddy-xcaddy
+    state: absent

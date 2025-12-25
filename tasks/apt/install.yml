@@ -1,0 +1,29 @@
+---
+- name: Install APT dependencies
+  become: true
+  ansible.builtin.apt:
+    name:
+      - debian-keyring
+      - debian-archive-keyring
+      - apt-transport-https
+      - golang-go
+    update_cache: true
+    state: present
+
+- name: Add xcaddy repository
+  become: true
+  ansible.builtin.deb822_repository:
+    name: caddy-xcaddy
+    types: deb
+    uris: '{{ xcaddy_apt_repo_url }}'
+    suites: any-version
+    components: main
+    signed_by: '{{ xcaddy_apt_gpg_url }}'
+    state: present
+
+- name: Install xcaddy
+  become: true
+  ansible.builtin.apt:
+    name: xcaddy
+    update_cache: true
+    state: present

@@ -1,0 +1,19 @@
+---
+- name: Validate Caddy config
+  ansible.builtin.command:
+    cmd: '{{ xcaddy_bin_path }} validate --config {{ xcaddy_caddyfile_path }}'
+  become: true
+  changed_when: false
+  listen: Reload Caddy
+
+- name: Reload Caddy
+  ansible.builtin.systemd_service:
+    name: caddy
+    state: reloaded
+  become: true
+
+- name: Restart Caddy
+  ansible.builtin.systemd_service:
+    name: caddy
+    state: restarted
+  become: true

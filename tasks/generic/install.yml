@@ -1,0 +1,22 @@
+---
+# Generic installation using Go (for non-Debian systems)
+# Supports: RedHat, Archlinux, and other distros with Go available
+
+- name: Install Go package
+  become: true
+  ansible.builtin.package:
+    name: "{{ 'golang' if ansible_facts.os_family == 'RedHat' else 'go' }}"
+    state: present
+
+- name: Install xcaddy via go install
+  become: true
+  ansible.builtin.command:
+    cmd: go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+    creates: /root/go/bin/xcaddy
+  environment:
+    GOPATH: /root/go
+    GOPROXY: '{{ xcaddy_goproxy }}'
+
+- name: Set xcaddy binary path for generic install
+  ansible.builtin.set_fact:
+    xcaddy_bin: /root/go/bin/xcaddy
