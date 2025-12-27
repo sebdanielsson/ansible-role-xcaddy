@@ -30,8 +30,16 @@ RUN if [ $(command -v apt) ]; then \
               /lib/systemd/system/systemd-update-utmp*; \
     elif [ $(command -v dnf) ]; then \
         dnf makecache && \
-        dnf --assumeyes install /usr/bin/python3 /usr/bin/python3-config /usr/bin/dnf-3 sudo bash iproute rsync systemd dbus && \
+        dnf --assumeyes install /usr/bin/python3 /usr/bin/python3-config /usr/bin/dnf-3 sudo bash iproute rsync systemd dbus shadow-utils && \
         dnf clean all && \
+        # Fix PAM configuration for sudo in minimal containers (RHEL UBI)
+        sed -i 's/^Defaults.*requiretty/#Defaults requiretty/' /etc/sudoers 2>/dev/null || true && \
+        echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel-nopasswd && \
+        chmod 440 /etc/sudoers.d/wheel-nopasswd && \
+        # Fix PAM to not require password for sudo
+        if [ -f /etc/pam.d/sudo ]; then \
+            sed -i 's/^auth.*required.*pam_unix.so/auth sufficient pam_permit.so/' /etc/pam.d/sudo; \
+        fi && \
         rm -f /lib/systemd/system/multi-user.target.wants/* \
               /etc/systemd/system/*.wants/* \
               /lib/systemd/system/local-fs.target.wants/* \
