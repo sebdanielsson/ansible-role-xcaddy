@@ -140,10 +140,24 @@
     chdir: '{{ xcaddy_build_dir }}'
   environment:
     GOPROXY: '{{ xcaddy_goproxy }}'
+    PATH: '/usr/local/go/bin:{{ ansible_env.PATH }}'
   become: true
   register: xcaddy_build_result
   changed_when: true
   when: xcaddy_rebuild_needed
+
+- name: Verify Caddy binary was built
+  ansible.builtin.stat:
+    path: '{{ xcaddy_build_dir }}/caddy'
+  register: caddy_built_binary
+  when: xcaddy_rebuild_needed
+
+- name: Fail if Caddy binary was not built
+  ansible.builtin.fail:
+    msg: |
+      Caddy build failed! xcaddy did not produce a binary.
+      Build output: {{ xcaddy_build_result.stderr | default('No stderr') }}
+  when: xcaddy_rebuild_needed and not caddy_built_binary.stat.exists
 
 - name: Install Caddy binary
   ansible.builtin.copy:

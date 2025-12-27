@@ -9,12 +9,12 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 - **Caddyfile configuration** - supports both raw content and Jinja2 templates
 - **Systemd integration** with proper capabilities for binding to privileged ports
 - **Config validation** before reloading to prevent broken deployments
-- **Multi-distro support** - Debian uses official xcaddy repo, others use Go-based install
+- **Multi-distro support** - consistent Go-based installation across all supported distros
 
 ## Requirements
 
 - systemd init system
-- **Debian family** (Debian, Ubuntu, Raspbian) - uses official Cloudsmith xcaddy repo
+- **Debian family** (Debian, Ubuntu, Raspbian) - uses Go package + `go install`
 - **RedHat family** (Fedora, RHEL, CentOS, AlmaLinux, RockyLinux) - uses Go package + `go install`
 - **Arch Linux family** (Arch Linux, Manjaro) - uses Go package + `go install`
 - **Other distros** - uses Go package + `go install` (best effort)
@@ -26,7 +26,7 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 | Variable | Default | Description |
 | -------------- | -------- | ------------- |
 | `xcaddy_state` | `present` | Role state: `present`, `latest`, or `absent` |
-| `xcaddy_caddy_version` | `latest` | Caddy version to build (e.g., `v2.8.4` or `latest`) |
+| `xcaddy_caddy_version` | `latest` | Caddy version to build (e.g., `v2.10.2` or `latest`) |
 
 ### Modules
 
@@ -61,15 +61,6 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 | `xcaddy_bin` | `xcaddy` | Path to xcaddy binary (auto-configured) |
 | `xcaddy_build_dir` | `/tmp/xcaddy-build` | Temporary build directory |
 | `xcaddy_goproxy` | `$GOPROXY` or `https://proxy.golang.org,direct` | Go module proxy URL |
-
-### APT Repository (Debian Only)
-
-| Variable | Default | Description |
-| ---------- | --------- | ------------- |
-| `xcaddy_apt_gpg_url` | `https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key` | GPG key URL for xcaddy repo |
-| `xcaddy_apt_repo_url` | `https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian` | APT repository URL |
-
-These can be overridden for enterprise environments with internal mirrors.
 
 ## Dependencies
 
@@ -129,7 +120,7 @@ Ansible Collections:
   roles:
     - role: sebdanielsson.xcaddy
       vars:
-        xcaddy_caddy_version: "v2.8.4"
+        xcaddy_caddy_version: "v2.10.2"
         xcaddy_modules:
           - github.com/caddy-dns/cloudflare@v0.2.2
         xcaddy_caddyfile_content: |

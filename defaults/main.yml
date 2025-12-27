@@ -2,7 +2,7 @@
 # State of the xcaddy role: present, latest, or absent
 xcaddy_state: present
 
-# Caddy version to build (e.g., "v2.8.4" or "latest")
+# Caddy version to build (e.g., "v2.10.2" or "latest")
 xcaddy_caddy_version: latest
 
 # List of Caddy modules to include in the build
@@ -58,7 +58,5 @@ xcaddy_build_dir: /tmp/xcaddy-build
 # Go module proxy URL (uses system GOPROXY if set, otherwise defaults to official proxy)
 xcaddy_goproxy: "{{ lookup('env', 'GOPROXY') | default('https://proxy.golang.org,direct', true) }}"
 
-# APT repository settings (Debian family only)
-# Override these for enterprise environments with internal mirrors
-xcaddy_apt_gpg_url: https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key
-xcaddy_apt_repo_url: https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian
+# Go version to install (e.g., "1.24.1" or "latest" for auto-detection)
+xcaddy_go_version: latest

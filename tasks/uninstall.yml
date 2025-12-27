@@ -55,10 +55,5 @@
     name: '{{ xcaddy_group }}'
     state: absent
 
-- name: Include Debian family uninstall tasks
-  ansible.builtin.include_tasks: apt/uninstall.yml
-  when: ansible_facts.os_family == 'Debian'
-
-- name: Include generic uninstall tasks
+- name: Include uninstall tasks
   ansible.builtin.include_tasks: generic/uninstall.yml
-  when: ansible_facts.os_family != 'Debian'

@@ -1,8 +1,9 @@
 ---
-# Generic uninstallation (for non-Debian systems)
+# Generic uninstallation
 
 - name: Remove xcaddy binary
   become: true
   ansible.builtin.file:
     path: /root/go/bin/xcaddy
     state: absent
+# Note: We intentionally leave Go installed as it may be used by other applications
