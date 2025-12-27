@@ -1,0 +1,100 @@
+---
+# Stage 1: Initial build with pinned versions
+- name: 'Stage 1: Initial Caddy build with pinned versions'
+  hosts: all
+  become: true
+  vars:
+    xcaddy_caddy_version: 'v2.10.2'
+    xcaddy_modules:
+      - github.com/caddy-dns/cloudflare@v0.2.1
+    xcaddy_caddyfile_content: |
+      :8080 {
+        respond "OK"
+      }
+  tasks:
+    - name: Apply xcaddy role (initial build)
+      ansible.builtin.include_role:
+        name: ansible-role-xcaddy
+
+    - name: Record initial build status
+      ansible.builtin.set_fact:
+        stage1_rebuild_needed: '{{ xcaddy_rebuild_needed }}'
+
+    - name: Assert initial build was performed
+      ansible.builtin.assert:
+        that:
+          - stage1_rebuild_needed | bool
+        fail_msg: 'Stage 1 FAILED: Initial build should have been triggered'
+        success_msg: 'Stage 1 PASSED: Initial build was triggered as expected'
+
+# Stage 2: Re-run with same config (should skip rebuild)
+- name: 'Stage 2: Re-run with identical config (test idempotency)'
+  hosts: all
+  become: true
+  vars:
+    xcaddy_caddy_version: 'v2.10.2'
+    xcaddy_modules:
+      - github.com/caddy-dns/cloudflare@v0.2.1
+    xcaddy_caddyfile_content: |
+      :8080 {
+        respond "OK"
+      }
+  tasks:
+    - name: Apply xcaddy role (idempotency check)
+      ansible.builtin.include_role:
+        name: ansible-role-xcaddy
+
+    - name: Record idempotency check status
+      ansible.builtin.set_fact:
+        stage2_rebuild_needed: '{{ xcaddy_rebuild_needed }}'
+
+    - name: Assert rebuild was skipped
+      ansible.builtin.assert:
+        that:
+          - not (stage2_rebuild_needed | bool)
+        fail_msg: 'Stage 2 FAILED: Rebuild should have been skipped (idempotency broken)'
+        success_msg: 'Stage 2 PASSED: Rebuild was skipped as expected (idempotent)'
+
+# Stage 3: Bump module version (should trigger rebuild)
+- name: 'Stage 3: Bump module version (test version change detection)'
+  hosts: all
+  become: true
+  vars:
+    xcaddy_caddy_version: 'v2.10.2'
+    xcaddy_modules:
+      - github.com/caddy-dns/cloudflare@v0.2.2
+    xcaddy_caddyfile_content: |
+      :8080 {
+        respond "OK"
+      }
+  tasks:
+    - name: Apply xcaddy role (version bump)
+      ansible.builtin.include_role:
+        name: ansible-role-xcaddy
+
+    - name: Record version bump status
+      ansible.builtin.set_fact:
+        stage3_rebuild_needed: '{{ xcaddy_rebuild_needed }}'
+
+    - name: Assert rebuild was triggered
+      ansible.builtin.assert:
+        that:
+          - stage3_rebuild_needed | bool
+        fail_msg: 'Stage 3 FAILED: Rebuild should have been triggered (version bump not detected)'
+        success_msg: 'Stage 3 PASSED: Rebuild was triggered as expected (version change detected)'
+
+# Summary
+- name: 'Test Summary'
+  hosts: all
+  become: true
+  tasks:
+    - name: Display test results summary
+      ansible.builtin.debug:
+        msg: |
+          ============================================
+          MOLECULE TEST RESULTS SUMMARY
+          ============================================
+          Stage 1 (Initial build):     {{ 'PASSED' if stage1_rebuild_needed | bool else 'FAILED' }}
+          Stage 2 (Idempotency):       {{ 'PASSED' if not (stage2_rebuild_needed | bool) else 'FAILED' }}
+          Stage 3 (Version bump):      {{ 'PASSED' if stage3_rebuild_needed | bool else 'FAILED' }}
+          ============================================

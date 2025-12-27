@@ -1,0 +1,45 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+
+driver:
+  name: docker
+
+platforms:
+  - name: instance
+    image: ${MOLECULE_DOCKER_IMAGE:-ubuntu}:${MOLECULE_DOCKER_TAG:-latest}
+    cgroupns_mode: host
+    privileged: true
+    command: /sbin/init
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /run
+      - /run/lock
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+  env:
+    ANSIBLE_ROLES_PATH: '${MOLECULE_PROJECT_DIRECTORY}/..:${ANSIBLE_ROLES_PATH}'
+
+verifier:
+  name: ansible
+
+# Custom test sequence - skip built-in idempotence since we test it in converge.yml Stage 2
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    # idempotence - skipped, we test this in converge.yml Stage 2
+    - verify
+    - cleanup
+    - destroy

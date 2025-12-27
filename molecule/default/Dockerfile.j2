@@ -1,0 +1,63 @@
+# Molecule managed
+
+{% if item.registry is defined %}
+FROM {{ item.registry.url }}/{{ item.image }}
+{% else %}
+FROM {{ item.image }}
+{% endif %}
+
+{% if item.env is defined %}
+{% for var, value in item.env.items() %}
+{% if value %}
+ENV {{ var }} {{ value }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+# Install base packages and systemd for service testing
+RUN if [ $(command -v apt) ]; then \
+        export DEBIAN_FRONTEND=noninteractive && \
+        apt update && \
+        apt install -y sudo bash ca-certificates iproute2 python3-apt python3-debian aptitude rsync systemd systemd-sysv dbus && \
+        apt clean && \
+        rm -rf /var/lib/apt/lists/* && \
+        rm -f /lib/systemd/system/multi-user.target.wants/* \
+              /etc/systemd/system/*.wants/* \
+              /lib/systemd/system/local-fs.target.wants/* \
+              /lib/systemd/system/sockets.target.wants/*udev* \
+              /lib/systemd/system/sockets.target.wants/*initctl* \
+              /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
+              /lib/systemd/system/systemd-update-utmp*; \
+    elif [ $(command -v dnf) ]; then \
+        dnf makecache && \
+        dnf --assumeyes install /usr/bin/python3 /usr/bin/python3-config /usr/bin/dnf-3 sudo bash iproute rsync systemd dbus && \
+        dnf clean all && \
+        rm -f /lib/systemd/system/multi-user.target.wants/* \
+              /etc/systemd/system/*.wants/* \
+              /lib/systemd/system/local-fs.target.wants/* \
+              /lib/systemd/system/sockets.target.wants/*udev* \
+              /lib/systemd/system/sockets.target.wants/*initctl* \
+              /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
+              /lib/systemd/system/systemd-update-utmp*; \
+    elif [ $(command -v yum) ]; then \
+        yum makecache fast && \
+        yum install -y /usr/bin/python /usr/bin/python2-config sudo yum-plugin-ovl bash iproute rsync systemd && \
+        sed -i 's/plugins=0/plugins=1/g' /etc/yum.conf && \
+        yum clean all; \
+    elif [ $(command -v zypper) ]; then \
+        zypper refresh && \
+        zypper install -y python3 sudo bash iproute2 rsync systemd && \
+        zypper clean -a; \
+    elif [ $(command -v apk) ]; then \
+        apk update && \
+        apk add --no-cache python3 sudo bash ca-certificates rsync openrc && \
+        mkdir -p /run/openrc && touch /run/openrc/softlevel; \
+    elif [ $(command -v xbps-install) ]; then \
+        xbps-install -Syu && \
+        xbps-install -y python3 sudo bash ca-certificates iproute2 rsync && \
+        xbps-remove -O; \
+    fi
+
+VOLUME ["/sys/fs/cgroup", "/run", "/run/lock"]
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]

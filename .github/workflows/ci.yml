@@ -27,7 +27,6 @@ jobs:
   molecule:
     name: Molecule Test
     runs-on: ubuntu-24.04-arm
-    if: false
     strategy:
       matrix:
         include:
@@ -42,12 +41,12 @@ jobs:
             experimental: false
 
           - docker_image: fedora
-            docker_tag: '42'
+            docker_tag: '43'
             playbook: converge.yml
             experimental: false
 
-          - docker_image: redhat/ubi9
-            docker_tag: '9.6'
+          - docker_image: redhat/ubi10
+            docker_tag: '10.1'
             playbook: converge.yml
             experimental: false
 
@@ -72,39 +71,3 @@ jobs:
           MOLECULE_DOCKER_IMAGE: ${{ matrix.docker_image }}
           MOLECULE_DOCKER_TAG: ${{ matrix.docker_tag }}
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
-
-  migration-test:
-    name: Migration Test
-    runs-on: ubuntu-24.04-arm
-    if: false
-    strategy:
-      matrix:
-        include:
-          - docker_image: debian
-            docker_tag: '12'  # Latest possible because of migration from flavor-specific to any suite
-            experimental: false
-
-          - docker_image: ubuntu
-            docker_tag: '24.04'
-            experimental: false
-
-    steps:
-      - name: Check out the codebase
-        uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          activate-environment: true
-
-      - name: Install dependencies
-        run: uv pip install -r requirements.txt
-
-      - name: Run Migration Molecule tests
-        run: molecule test -s migration
-        continue-on-error: ${{ matrix.experimental }}
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          MOLECULE_DOCKER_IMAGE: ${{ matrix.docker_image }}
-          MOLECULE_DOCKER_TAG: ${{ matrix.docker_tag }}
