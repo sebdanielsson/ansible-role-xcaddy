@@ -60,13 +60,8 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 | `xcaddy_bin_path` | `/usr/local/bin/caddy` | Path to install Caddy binary |
 | `xcaddy_bin` | `xcaddy` | Path to xcaddy binary (auto-configured) |
 | `xcaddy_build_dir` | `/tmp/xcaddy-build` | Temporary build directory |
+| `xcaddy_go_version` | `latest` | Go version to install. E.g., "1.25.5", or "latest" for auto-detection |
 | `xcaddy_goproxy` | `$GOPROXY` or `https://proxy.golang.org,direct` | Go module proxy URL |
-
-## Dependencies
-
-Ansible Collections:
-
-- `community.general` (for package module on some distros)
 
 ## Example Playbooks
 
