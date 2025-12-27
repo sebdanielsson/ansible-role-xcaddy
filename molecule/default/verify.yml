@@ -130,17 +130,16 @@
 
     # Verify service is enabled and running (with retries for systemd startup)
     - name: Wait for systemd to be ready
-      ansible.builtin.command:
-        cmd: systemctl is-system-running
+      ansible.builtin.systemd_service:
+        name: caddy
       register: systemd_status
-      until: systemd_status.stdout in ['running', 'degraded']
+      until: systemd_status.status.ActiveState is defined
       retries: 10
       delay: 3
-      changed_when: false
       failed_when: false
 
     - name: Check Caddy service is enabled
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: caddy
       register: caddy_service_status
 
@@ -152,7 +151,7 @@
         success_msg: 'Caddy service is enabled'
 
     - name: Wait for Caddy service to be active
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: caddy
       register: caddy_service_active
       until: caddy_service_active.status.ActiveState == 'active'
