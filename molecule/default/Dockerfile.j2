@@ -32,14 +32,18 @@ RUN if [ $(command -v apt) ]; then \
         dnf makecache && \
         dnf --assumeyes install /usr/bin/python3 /usr/bin/python3-config /usr/bin/dnf-3 sudo bash iproute rsync systemd dbus shadow-utils && \
         dnf clean all && \
-        # Fix PAM configuration for sudo in minimal containers (RHEL UBI)
+        # Fix sudo for minimal containers (RHEL UBI 10)
+        # Disable requiretty
         sed -i 's/^Defaults.*requiretty/#Defaults requiretty/' /etc/sudoers 2>/dev/null || true && \
-        echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel-nopasswd && \
-        chmod 440 /etc/sudoers.d/wheel-nopasswd && \
-        # Fix PAM to not require password for sudo
-        if [ -f /etc/pam.d/sudo ]; then \
-            sed -i 's/^auth.*required.*pam_unix.so/auth sufficient pam_permit.so/' /etc/pam.d/sudo; \
-        fi && \
+        # Disable PAM for sudo - this fixes "PAM account management error" in minimal UBI containers
+        sed -i 's/^Defaults.*use_pty/#Defaults use_pty/' /etc/sudoers 2>/dev/null || true && \
+        echo 'Defaults !pam_session' >> /etc/sudoers && \
+        echo 'Defaults !pam_setcred' >> /etc/sudoers && \
+        # Allow ALL users passwordless sudo (for container testing)
+        echo 'ALL ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/nopasswd && \
+        chmod 440 /etc/sudoers.d/nopasswd && \
+        # Create a minimal PAM config for sudo that doesn't require auth services
+        echo -e '#%PAM-1.0\nauth       sufficient   pam_permit.so\naccount    sufficient   pam_permit.so\npassword   sufficient   pam_permit.so\nsession    sufficient   pam_permit.so' > /etc/pam.d/sudo && \
         rm -f /lib/systemd/system/multi-user.target.wants/* \
               /etc/systemd/system/*.wants/* \
               /lib/systemd/system/local-fs.target.wants/* \
