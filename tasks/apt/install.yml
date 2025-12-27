@@ -7,6 +7,7 @@
       - debian-archive-keyring
       - apt-transport-https
       - golang-go
+      - python3-debian
     update_cache: true
     state: present
 
