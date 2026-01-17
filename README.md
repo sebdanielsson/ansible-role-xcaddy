@@ -23,45 +23,45 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 
 ### State Control
 
-| Variable | Default | Description |
-| -------------- | -------- | ------------- |
-| `xcaddy_state` | `present` | Role state: `present`, `latest`, or `absent` |
-| `xcaddy_caddy_version` | `latest` | Caddy version to build (e.g., `v2.10.2` or `latest`) |
+| Variable               | Default   | Description                                          |
+| ---------------------- | --------- | ---------------------------------------------------- |
+| `xcaddy_state`         | `present` | Role state: `present`, `latest`, or `absent`         |
+| `xcaddy_caddy_version` | `latest`  | Caddy version to build (e.g., `v2.10.2` or `latest`) |
 
 ### Modules
 
-| Variable | Default | Description |
-| ---------------- | ------- | ------------------------------------------------- |
-| `xcaddy_modules` | `[]` | List of Caddy module URLs, and optionally versions, to include in the build |
+| Variable         | Default | Description                                                                 |
+| ---------------- | ------- | --------------------------------------------------------------------------- |
+| `xcaddy_modules` | `[]`    | List of Caddy module URLs, and optionally versions, to include in the build |
 
 ### Configuration
 
-| Variable | Default | Description |
-| ---------- | --------- | ------------- |
-| `xcaddy_caddyfile_content` | `""` | Raw Caddyfile content (mutually exclusive with template) |
-| `xcaddy_caddyfile_template` | `""` | Path to Caddyfile Jinja2 template (mutually exclusive with content) |
-| `xcaddy_caddyfile_path` | `/etc/caddy/Caddyfile` | Path where Caddyfile will be deployed |
-| `xcaddy_config_dir` | `/etc/caddy` | Caddy configuration directory |
-| `xcaddy_data_dir` | `/var/lib/caddy` | Caddy data directory (certificates, etc.) |
+| Variable                    | Default                | Description                                                         |
+| --------------------------- | ---------------------- | ------------------------------------------------------------------- |
+| `xcaddy_caddyfile_content`  | `""`                   | Raw Caddyfile content (mutually exclusive with template)            |
+| `xcaddy_caddyfile_template` | `""`                   | Path to Caddyfile Jinja2 template (mutually exclusive with content) |
+| `xcaddy_caddyfile_path`     | `/etc/caddy/Caddyfile` | Path where Caddyfile will be deployed                               |
+| `xcaddy_config_dir`         | `/etc/caddy`           | Caddy configuration directory                                       |
+| `xcaddy_data_dir`           | `/var/lib/caddy`       | Caddy data directory (certificates, etc.)                           |
 
 ### Service
 
-| Variable | Default | Description |
-| ---------- | --------- | ------------- |
-| `xcaddy_service_enabled` | `true` | Enable Caddy service at boot |
-| `xcaddy_service_started` | `true` | Start Caddy service after configuration |
-| `xcaddy_user` | `caddy` | User to run Caddy service |
-| `xcaddy_group` | `caddy` | Group for Caddy service |
+| Variable                 | Default | Description                             |
+| ------------------------ | ------- | --------------------------------------- |
+| `xcaddy_service_enabled` | `true`  | Enable Caddy service at boot            |
+| `xcaddy_service_started` | `true`  | Start Caddy service after configuration |
+| `xcaddy_user`            | `caddy` | User to run Caddy service               |
+| `xcaddy_group`           | `caddy` | Group for Caddy service                 |
 
 ### Paths
 
-| Variable | Default | Description |
-| ---------- | --------- | ------------- |
-| `xcaddy_bin_path` | `/usr/local/bin/caddy` | Path to install Caddy binary |
-| `xcaddy_bin` | `xcaddy` | Path to xcaddy binary (auto-configured) |
-| `xcaddy_build_dir` | `/tmp/xcaddy-build` | Temporary build directory |
-| `xcaddy_go_version` | `latest` | Go version to install. E.g., "1.25.5", or "latest" for auto-detection |
-| `xcaddy_goproxy` | `$GOPROXY` or `https://proxy.golang.org,direct` | Go module proxy URL |
+| Variable            | Default                                         | Description                                                           |
+| ------------------- | ----------------------------------------------- | --------------------------------------------------------------------- |
+| `xcaddy_bin_path`   | `/usr/local/bin/caddy`                          | Path to install Caddy binary                                          |
+| `xcaddy_bin`        | `xcaddy`                                        | Path to xcaddy binary (auto-configured)                               |
+| `xcaddy_build_dir`  | `/tmp/xcaddy-build`                             | Temporary build directory                                             |
+| `xcaddy_go_version` | `latest`                                        | Go version to install. E.g., "1.25.5", or "latest" for auto-detection |
+| `xcaddy_goproxy`    | `$GOPROXY` or `https://proxy.golang.org,direct` | Go module proxy URL                                                   |
 
 ## Example Playbooks
 

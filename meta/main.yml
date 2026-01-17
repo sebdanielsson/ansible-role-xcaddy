@@ -3,8 +3,8 @@ galaxy_info:
   role_name: xcaddy
   author: sebdanielsson
   description: Install and configure Caddy using xcaddy on Debian, RedHat and Archlinux family systems.
-  license: 'license (MIT)'
-  min_ansible_version: '2.17.14'
+  license: "license (MIT)"
+  min_ansible_version: "2.17.14"
   platforms:
     - name: Debian
       versions:
@@ -18,13 +18,13 @@ galaxy_info:
 
     - name: Fedora
       versions:
-        - '42'
-        - '43'
+        - "42"
+        - "43"
 
     - name: EL
       versions:
-        - '9'
-        - '10'
+        - "9"
+        - "10"
 
     - name: ArchLinux
       versions:

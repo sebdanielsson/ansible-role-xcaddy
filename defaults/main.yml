@@ -19,13 +19,13 @@ xcaddy_modules: []
 #     :80 {
 #       respond "Hello, World!"
 #     }
-xcaddy_caddyfile_content: ''
+xcaddy_caddyfile_content: ""
 
 # Caddyfile template path (relative to playbook or role templates)
 # If set, this template will be used instead of xcaddy_caddyfile_content
 # Example:
 #   xcaddy_caddyfile_template: "my_caddyfile.j2"
-xcaddy_caddyfile_template: ''
+xcaddy_caddyfile_template: ""
 
 # Whether to enable the Caddy service at boot
 xcaddy_service_enabled: true

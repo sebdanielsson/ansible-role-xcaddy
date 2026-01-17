@@ -1,12 +1,12 @@
 ---
 - name: Check if Caddy is already installed
   ansible.builtin.stat:
-    path: '{{ xcaddy_bin_path }}'
+    path: "{{ xcaddy_bin_path }}"
   register: caddy_binary
 
 - name: Get current Caddy version
   ansible.builtin.command:
-    cmd: '{{ xcaddy_bin_path }} version'
+    cmd: "{{ xcaddy_bin_path }} version"
   register: caddy_current_version
   changed_when: false
   failed_when: false
@@ -14,7 +14,7 @@
 
 - name: Get current Caddy modules (non-standard only)
   ansible.builtin.command:
-    cmd: '{{ xcaddy_bin_path }} list-modules --packages --skip-standard --versions'
+    cmd: "{{ xcaddy_bin_path }} list-modules --packages --skip-standard --versions"
   register: caddy_current_modules
   changed_when: false
   failed_when: false
@@ -120,14 +120,14 @@
 
 - name: Build module arguments
   ansible.builtin.set_fact:
-    xcaddy_module_args: '{% for mod in xcaddy_modules %}--with {{ mod }} {% endfor %}'
+    xcaddy_module_args: "{% for mod in xcaddy_modules %}--with {{ mod }} {% endfor %}"
   when: xcaddy_rebuild_needed
 
 - name: Create build directory
   ansible.builtin.file:
-    path: '{{ xcaddy_build_dir }}'
+    path: "{{ xcaddy_build_dir }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
   become: true
   when: xcaddy_rebuild_needed
 
@@ -137,10 +137,10 @@
       {{ xcaddy_bin }} build {{ xcaddy_version_arg }}
       {{ xcaddy_module_args }}
       --output {{ xcaddy_build_dir }}/caddy
-    chdir: '{{ xcaddy_build_dir }}'
+    chdir: "{{ xcaddy_build_dir }}"
   environment:
-    GOPROXY: '{{ xcaddy_goproxy }}'
-    PATH: '/usr/local/go/bin:{{ ansible_env.PATH }}'
+    GOPROXY: "{{ xcaddy_goproxy }}"
+    PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"
   become: true
   register: xcaddy_build_result
   changed_when: true
@@ -148,7 +148,7 @@
 
 - name: Verify Caddy binary was built
   ansible.builtin.stat:
-    path: '{{ xcaddy_build_dir }}/caddy'
+    path: "{{ xcaddy_build_dir }}/caddy"
   register: caddy_built_binary
   when: xcaddy_rebuild_needed
 
@@ -161,11 +161,11 @@
 
 - name: Install Caddy binary
   ansible.builtin.copy:
-    src: '{{ xcaddy_build_dir }}/caddy'
-    dest: '{{ xcaddy_bin_path }}'
+    src: "{{ xcaddy_build_dir }}/caddy"
+    dest: "{{ xcaddy_bin_path }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
     remote_src: true
   become: true
   notify: Restart Caddy
@@ -173,7 +173,7 @@
 
 - name: Clean up build directory
   ansible.builtin.file:
-    path: '{{ xcaddy_build_dir }}'
+    path: "{{ xcaddy_build_dir }}"
     state: absent
   become: true
   when: xcaddy_rebuild_needed

@@ -3,8 +3,8 @@
   hosts: all
   become: true
   vars:
-    expected_caddy_version: 'v2.10.2'
-    expected_module: 'github.com/caddy-dns/cloudflare'
+    expected_caddy_version: "v2.10.2"
+    expected_module: "github.com/caddy-dns/cloudflare"
   tasks:
     # Verify Caddy binary
     - name: Check Caddy binary exists
@@ -17,8 +17,8 @@
         that:
           - caddy_binary.stat.exists
           - caddy_binary.stat.executable
-        fail_msg: 'Caddy binary not found or not executable at /usr/local/bin/caddy'
-        success_msg: 'Caddy binary exists and is executable'
+        fail_msg: "Caddy binary not found or not executable at /usr/local/bin/caddy"
+        success_msg: "Caddy binary exists and is executable"
 
     # Verify Caddy version
     - name: Get Caddy version
@@ -31,8 +31,8 @@
       ansible.builtin.assert:
         that:
           - expected_caddy_version in caddy_version_output.stdout
-        fail_msg: 'Expected Caddy version {{ expected_caddy_version }}, got: {{ caddy_version_output.stdout }}'
-        success_msg: 'Caddy version is correct: {{ caddy_version_output.stdout }}'
+        fail_msg: "Expected Caddy version {{ expected_caddy_version }}, got: {{ caddy_version_output.stdout }}"
+        success_msg: "Caddy version is correct: {{ caddy_version_output.stdout }}"
 
     # Verify Caddy modules
     - name: Get Caddy modules
@@ -45,8 +45,8 @@
       ansible.builtin.assert:
         that:
           - expected_module in caddy_modules_output.stdout
-        fail_msg: 'Expected module {{ expected_module }} not found in: {{ caddy_modules_output.stdout }}'
-        success_msg: 'Expected module {{ expected_module }} is installed'
+        fail_msg: "Expected module {{ expected_module }} not found in: {{ caddy_modules_output.stdout }}"
+        success_msg: "Expected module {{ expected_module }} is installed"
 
     # Verify config directory and Caddyfile
     - name: Check config directory exists
@@ -59,8 +59,8 @@
         that:
           - config_dir.stat.exists
           - config_dir.stat.isdir
-        fail_msg: 'Config directory /etc/caddy does not exist'
-        success_msg: 'Config directory /etc/caddy exists'
+        fail_msg: "Config directory /etc/caddy does not exist"
+        success_msg: "Config directory /etc/caddy exists"
 
     - name: Check Caddyfile exists
       ansible.builtin.stat:
@@ -71,8 +71,8 @@
       ansible.builtin.assert:
         that:
           - caddyfile.stat.exists
-        fail_msg: 'Caddyfile not found at /etc/caddy/Caddyfile'
-        success_msg: 'Caddyfile exists at /etc/caddy/Caddyfile'
+        fail_msg: "Caddyfile not found at /etc/caddy/Caddyfile"
+        success_msg: "Caddyfile exists at /etc/caddy/Caddyfile"
 
     # Verify Caddy config is valid
     - name: Validate Caddy config
@@ -85,8 +85,8 @@
       ansible.builtin.assert:
         that:
           - caddy_validate.rc == 0
-        fail_msg: 'Caddy config validation failed: {{ caddy_validate.stderr }}'
-        success_msg: 'Caddy config is valid'
+        fail_msg: "Caddy config validation failed: {{ caddy_validate.stderr }}"
+        success_msg: "Caddy config is valid"
 
     # Verify service file exists
     - name: Check service file exists
@@ -98,8 +98,8 @@
       ansible.builtin.assert:
         that:
           - service_file.stat.exists
-        fail_msg: 'Service file not found at /etc/systemd/system/caddy.service'
-        success_msg: 'Service file exists at /etc/systemd/system/caddy.service'
+        fail_msg: "Service file not found at /etc/systemd/system/caddy.service"
+        success_msg: "Service file exists at /etc/systemd/system/caddy.service"
 
     # Verify caddy user and group
     - name: Check caddy user exists
@@ -112,8 +112,8 @@
       ansible.builtin.assert:
         that:
           - caddy_user is not failed
-        fail_msg: 'Caddy user does not exist'
-        success_msg: 'Caddy user exists'
+        fail_msg: "Caddy user does not exist"
+        success_msg: "Caddy user exists"
 
     - name: Check caddy group exists
       ansible.builtin.getent:
@@ -125,8 +125,8 @@
       ansible.builtin.assert:
         that:
           - caddy_group is not failed
-        fail_msg: 'Caddy group does not exist'
-        success_msg: 'Caddy group exists'
+        fail_msg: "Caddy group does not exist"
+        success_msg: "Caddy group exists"
 
     # Verify service is enabled and running (with retries for systemd startup)
     - name: Wait for systemd to be ready
@@ -147,8 +147,8 @@
       ansible.builtin.assert:
         that:
           - caddy_service_status.status.UnitFileState == 'enabled'
-        fail_msg: 'Caddy service is not enabled'
-        success_msg: 'Caddy service is enabled'
+        fail_msg: "Caddy service is not enabled"
+        success_msg: "Caddy service is enabled"
 
     - name: Wait for Caddy service to be active
       ansible.builtin.systemd_service:
@@ -162,8 +162,8 @@
       ansible.builtin.assert:
         that:
           - caddy_service_active.status.ActiveState == 'active'
-        fail_msg: 'Caddy service is not running (state: {{ caddy_service_active.status.ActiveState }})'
-        success_msg: 'Caddy service is running'
+        fail_msg: "Caddy service is not running (state: {{ caddy_service_active.status.ActiveState }})"
+        success_msg: "Caddy service is running"
 
     # Verify Caddy is responding on port 8080
     - name: Wait for Caddy to respond on port 8080
@@ -180,8 +180,8 @@
         that:
           - caddy_response.status == 200
           - "'OK' in caddy_response.content"
-        fail_msg: 'Caddy did not respond correctly on port 8080'
-        success_msg: 'Caddy is responding correctly on port 8080'
+        fail_msg: "Caddy did not respond correctly on port 8080"
+        success_msg: "Caddy is responding correctly on port 8080"
 
     # Final summary
     - name: Display verification summary

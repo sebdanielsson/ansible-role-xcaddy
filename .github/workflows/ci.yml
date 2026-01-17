@@ -24,6 +24,10 @@ jobs:
           setup_python: true
           requirements_file: requirements.yml
 
+      - name: yamlfmt
+        run: |
+          go run github.com/google/yamlfmt/cmd/yamlfmt@main -conf .yamlfmt.yaml -lint
+
   molecule:
     name: Molecule Test
     runs-on: ubuntu-24.04-arm
@@ -31,22 +35,22 @@ jobs:
       matrix:
         include:
           - docker_image: debian
-            docker_tag: '13'
+            docker_tag: "13"
             playbook: converge.yml
             experimental: false
 
           - docker_image: ubuntu
-            docker_tag: '24.04'
+            docker_tag: "24.04"
             playbook: converge.yml
             experimental: false
 
           - docker_image: fedora
-            docker_tag: '43'
+            docker_tag: "43"
             playbook: converge.yml
             experimental: false
 
           - docker_image: redhat/ubi10
-            docker_tag: '10.1'
+            docker_tag: "10.1"
             playbook: converge.yml
             experimental: false
 
@@ -66,8 +70,8 @@ jobs:
         run: molecule test
         continue-on-error: ${{ matrix.experimental }}
         env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
+          PY_COLORS: "1"
+          ANSIBLE_FORCE_COLOR: "1"
           MOLECULE_DOCKER_IMAGE: ${{ matrix.docker_image }}
           MOLECULE_DOCKER_TAG: ${{ matrix.docker_tag }}
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}

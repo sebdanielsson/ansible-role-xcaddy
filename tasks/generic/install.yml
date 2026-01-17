@@ -20,12 +20,12 @@
 
 - name: Use pinned Go version
   ansible.builtin.set_fact:
-    go_version: '{{ xcaddy_go_version }}'
+    go_version: "{{ xcaddy_go_version }}"
   when: xcaddy_go_version != 'latest'
 
 - name: Display Go version to install
   ansible.builtin.debug:
-    msg: 'Installing Go version: {{ go_version }}'
+    msg: "Installing Go version: {{ go_version }}"
 
 - name: Check if Go is already installed
   ansible.builtin.stat:
@@ -50,9 +50,9 @@
 
 - name: Download Go tarball
   ansible.builtin.get_url:
-    url: 'https://go.dev/dl/go{{ go_version }}.linux-{{ go_arch }}.tar.gz'
-    dest: '/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz'
-    mode: '0644'
+    url: "https://go.dev/dl/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+    dest: "/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+    mode: "0644"
   become: true
   when: go_install_needed
 
@@ -65,7 +65,7 @@
 
 - name: Extract Go tarball
   ansible.builtin.unarchive:
-    src: '/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz'
+    src: "/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
     dest: /usr/local
     remote_src: true
   become: true
@@ -73,7 +73,7 @@
 
 - name: Clean up Go tarball
   ansible.builtin.file:
-    path: '/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz'
+    path: "/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
     state: absent
   become: true
   when: go_install_needed
@@ -81,7 +81,7 @@
 - name: Ensure Go is in system PATH
   ansible.builtin.lineinfile:
     path: /etc/profile
-    line: 'export PATH=$PATH:/usr/local/go/bin'
+    line: "export PATH=$PATH:/usr/local/go/bin"
     state: present
     create: false
   become: true
@@ -92,7 +92,7 @@
     creates: /root/go/bin/xcaddy
   environment:
     GOPATH: /root/go
-    GOPROXY: '{{ xcaddy_goproxy }}'
+    GOPROXY: "{{ xcaddy_goproxy }}"
   become: true
 
 - name: Set xcaddy binary path

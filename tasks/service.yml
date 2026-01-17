@@ -5,7 +5,7 @@
     dest: /etc/systemd/system/caddy.service
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   notify: Restart Caddy
 
@@ -17,7 +17,7 @@
 - name: Enable Caddy service
   ansible.builtin.systemd_service:
     name: caddy
-    enabled: '{{ xcaddy_service_enabled }}'
+    enabled: "{{ xcaddy_service_enabled }}"
   become: true
 
 - name: Start Caddy service

@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  no_log: '{{ molecule_no_log }}'
+  no_log: "{{ molecule_no_log }}"
   tags:
     - always
   tasks:
@@ -14,39 +14,39 @@
 
     - name: Destroy molecule instance(s)
       community.docker.docker_container:
-        name: '{{ item.name }}'
+        name: "{{ item.name }}"
         docker_host: "{{ item.docker_host | default(lookup('env', 'DOCKER_HOST') or 'unix://var/run/docker.sock') }}"
         ca_path: "{{ item.cacert_path | default((lookup('env', 'DOCKER_CERT_PATH') + '/ca.pem') if lookup('env', 'DOCKER_CERT_PATH') else omit) }}"
         client_cert: "{{ item.cert_path | default((lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') if lookup('env', 'DOCKER_CERT_PATH') else omit) }}"
         client_key: "{{ item.key_path | default((lookup('env', 'DOCKER_CERT_PATH') + '/key.pem') if lookup('env', 'DOCKER_CERT_PATH') else omit) }}"
         validate_certs: "{{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
         state: absent
-        force_kill: '{{ item.force_kill | default(true) }}'
-        keep_volumes: '{{ item.keep_volumes | default(true) }}'
+        force_kill: "{{ item.force_kill | default(true) }}"
+        keep_volumes: "{{ item.keep_volumes | default(true) }}"
         container_default_behavior: >-
           {{ item.container_default_behavior
              | default('compatibility' if ansible_version.full is version_compare('2.10', '>=') else omit) }}
       register: server
-      loop: '{{ molecule_yml.platforms }}'
+      loop: "{{ molecule_yml.platforms }}"
       loop_control:
-        label: '{{ item.name }}'
+        label: "{{ item.name }}"
       no_log: false
       async: 7200
       poll: 0
 
     - name: Wait for instance(s) deletion to complete
       ansible.builtin.async_status:
-        jid: '{{ item.ansible_job_id }}'
+        jid: "{{ item.ansible_job_id }}"
       register: docker_jobs
       until: docker_jobs is finished
       retries: 300
-      loop: '{{ server.results }}'
+      loop: "{{ server.results }}"
       loop_control:
-        label: '{{ item.item.name }}'
+        label: "{{ item.item.name }}"
 
     - name: Delete docker networks(s)
       ansible.builtin.include_tasks: tasks/delete_network.yml
-      loop: '{{ molecule_yml.platforms | molecule_get_docker_networks() }}'
+      loop: "{{ molecule_yml.platforms | molecule_get_docker_networks() }}"
       loop_control:
-        label: '{{ item.name }}'
+        label: "{{ item.name }}"
       no_log: false

@@ -1,7 +1,7 @@
 ---
 - name: Validate Caddy config
   ansible.builtin.command:
-    cmd: '{{ xcaddy_bin_path }} validate --config {{ xcaddy_caddyfile_path }}'
+    cmd: "{{ xcaddy_bin_path }} validate --config {{ xcaddy_caddyfile_path }}"
   become: true
   changed_when: false
   listen: Reload Caddy

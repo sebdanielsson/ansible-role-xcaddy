@@ -27,32 +27,32 @@
 - name: Remove Caddy binary
   become: true
   ansible.builtin.file:
-    path: '{{ xcaddy_bin_path }}'
+    path: "{{ xcaddy_bin_path }}"
     state: absent
 
 - name: Remove Caddy configuration directory
   become: true
   ansible.builtin.file:
-    path: '{{ xcaddy_config_dir }}'
+    path: "{{ xcaddy_config_dir }}"
     state: absent
 
 - name: Remove Caddy data directory
   become: true
   ansible.builtin.file:
-    path: '{{ xcaddy_data_dir }}'
+    path: "{{ xcaddy_data_dir }}"
     state: absent
 
 - name: Remove Caddy user
   become: true
   ansible.builtin.user:
-    name: '{{ xcaddy_user }}'
+    name: "{{ xcaddy_user }}"
     state: absent
     remove: true
 
 - name: Remove Caddy group
   become: true
   ansible.builtin.group:
-    name: '{{ xcaddy_group }}'
+    name: "{{ xcaddy_group }}"
     state: absent
 
 - name: Include uninstall tasks
