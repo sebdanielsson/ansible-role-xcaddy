@@ -35,6 +35,11 @@
     mode: "0750"
   become: true
 
+- name: Ensure only one xcaddy_caddyfile variable is set
+  ansible.builtin.fail:
+    msg: "Both xcaddy_caddyfile_content and xcaddy_caddyfile_template cannot be set."
+  when: xcaddy_caddyfile_content | length > 0 and xcaddy_caddyfile_template | length > 0
+
 - name: Deploy Caddyfile from content
   ansible.builtin.copy:
     content: "{{ xcaddy_caddyfile_content }}"
@@ -43,8 +48,9 @@
     group: "{{ xcaddy_group }}"
     mode: "0644"
   become: true
+  register: xcaddy_caddyfile_result
   when: xcaddy_caddyfile_content | length > 0
-  notify: Reload Caddy
+  notify: Validate Caddy config
 
 - name: Deploy Caddyfile from template
   ansible.builtin.template:
@@ -54,5 +60,6 @@
     group: "{{ xcaddy_group }}"
     mode: "0644"
   become: true
+  register: xcaddy_caddyfile_result
   when: xcaddy_caddyfile_template | length > 0
-  notify: Reload Caddy
+  notify: Validate Caddy config
