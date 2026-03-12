@@ -1,17 +1,36 @@
 ---
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: "Record if Caddy service is running"
+  ansible.builtin.set_fact:
+    xcaddy_service_running: >-
+      {{ 
+        ansible_facts.services['caddy.service'] is defined and 
+        ansible_facts.services['caddy.service'].state == 'running'
+      }}
+
+- name: "Deploy Caddy service EnvironmentFile"
+  ansible.builtin.template:
+    src: "{{ xcaddy_service_envfile_template }}"
+    dest: "{{ xcaddy_service_envfile_path }}"
+    owner: "{{ xcaddy_user }}"
+    group: "{{ xcaddy_group }}"
+    mode: 0600 # should not be readable by anyone else (likely contains passwords/secrets)
+  when:
+    - xcaddy_service_envfile_template | default('') | length > 0
+    - xcaddy_service_envfile_path | default('') | length > 0
+  register: xcaddy_service_envfile_result
+  become: true
+
 - name: Deploy Caddy systemd service unit
   ansible.builtin.template:
     src: caddy.service.j2
     dest: /etc/systemd/system/caddy.service
     owner: root
     group: root
-    mode: "0644"
-  become: true
-  notify: Restart Caddy
-
-- name: Reload systemd daemon
-  ansible.builtin.systemd_service:
-    daemon_reload: true
+    mode: 0644
+  register: xcaddy_service_result
   become: true
 
 - name: Enable Caddy service
@@ -20,9 +39,28 @@
     enabled: "{{ xcaddy_service_enabled }}"
   become: true
 
-- name: Start Caddy service
+- name: Reload systemd daemon if service unit changed
   ansible.builtin.systemd_service:
-    name: caddy
-    state: started
+    daemon_reload: true
+  when: xcaddy_service_result.changed
   become: true
+
+- name: "Record Caddy restart target"
+  ansible.builtin.set_fact:
+    xcaddy_service_restart: "{{ xcaddy_service_running and xcaddy_service_result.changed }}"
+
+- name: "Record Caddy reload target"
+  ansible.builtin.set_fact:
+    xcaddy_service_reload: >-
+      {{
+        xcaddy_service_running and
+        (xcaddy_caddyfile_result.changed or
+        (xcaddy_service_envfile_result is defined and xcaddy_service_envfile_result.changed))
+      }}
+
+- name: "Start or reload Caddy"
+  ansible.builtin.systemd:
+    name: caddy
+    state: "{{ 'restarted' if xcaddy_service_restart else ('reloaded' if xcaddy_service_reload else 'started') }}"
   when: xcaddy_service_started
+  become: true
