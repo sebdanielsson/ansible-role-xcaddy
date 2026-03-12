@@ -24,6 +24,9 @@ CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
 RuntimeDirectory=caddy
 RuntimeDirectoryMode=0750
+{% if xcaddy_service_envfile_template | default('') | length > 0 %}
+EnvironmentFile={{ xcaddy_service_envfile_path }}
+{% endif %}
 
 [Install]
 WantedBy=multi-user.target
