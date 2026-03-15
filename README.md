@@ -145,7 +145,9 @@ The role implements intelligent rebuild detection:
 2. **Module check**: Compares installed module versions against `xcaddy_modules` list
 3. **Rebuild trigger**: Only runs `xcaddy build` if version or modules differ or if unpinned modules are used
 
-When `xcaddy_state: latest`, the role will always rebuild to fetch the latest Caddy version.
+When `xcaddy_caddy_version: latest`, the role resolves the latest upstream Caddy GitHub release tag and rebuilds only when the installed binary is behind that release.
+
+When `xcaddy_state: latest`, the role will always rebuild to refresh the binary even if the installed version already matches the latest release.
 
 ## Handlers
 

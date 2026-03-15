@@ -20,6 +20,30 @@
   failed_when: false
   when: caddy_binary.stat.exists
 
+- name: Get latest Caddy release metadata
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/caddyserver/caddy/releases/latest
+    return_content: true
+    headers:
+      Accept: application/vnd.github+json
+  register: caddy_latest_release
+  when: xcaddy_caddy_version == 'latest'
+
+- name: Parse latest Caddy release version
+  ansible.builtin.set_fact:
+    xcaddy_latest_caddy_version: "{{ caddy_latest_release.json.tag_name }}"
+  when: xcaddy_caddy_version == 'latest'
+
+- name: Parse installed Caddy version
+  ansible.builtin.set_fact:
+    caddy_current_version_tag: "{{ ((caddy_current_version.stdout | default('') | trim).split() | first) | default('') }}"
+  when: caddy_binary.stat.exists
+
+- name: Set empty installed Caddy version if binary is missing
+  ansible.builtin.set_fact:
+    caddy_current_version_tag: ""
+  when: not caddy_binary.stat.exists
+
 - name: Filter module lines from output
   ansible.builtin.set_fact:
     caddy_module_lines: >-
@@ -93,7 +117,8 @@
       {{
         not caddy_binary.stat.exists
         or xcaddy_state == 'latest'
-        or (xcaddy_caddy_version != 'latest' and xcaddy_caddy_version not in (caddy_current_version.stdout | default('')))
+        or (xcaddy_caddy_version == 'latest' and xcaddy_latest_caddy_version != caddy_current_version_tag)
+        or (xcaddy_caddy_version != 'latest' and xcaddy_caddy_version != caddy_current_version_tag)
         or xcaddy_desired_normalized != xcaddy_installed_normalized
         or not xcaddy_versions_match
         or (xcaddy_unversioned_modules | length > 0)
@@ -106,6 +131,8 @@
       - Binary exists: {{ caddy_binary.stat.exists }}
       - xcaddy_state: {{ xcaddy_state }}
       - xcaddy_caddy_version: {{ xcaddy_caddy_version }}
+      - Latest upstream version: {{ xcaddy_latest_caddy_version | default('N/A') }}
+      - Current parsed version: {{ caddy_current_version_tag | default('N/A') }}
       - Current version: {{ caddy_current_version.stdout | default('N/A') }}
       - Desired modules: {{ xcaddy_modules | sort }}
       - Installed modules: {{ caddy_installed_modules | sort }}
