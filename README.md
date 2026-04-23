@@ -36,13 +36,16 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 
 ### Configuration
 
-| Variable                    | Default                | Description                                                         |
-| --------------------------- | ---------------------- | ------------------------------------------------------------------- |
-| `xcaddy_caddyfile_content`  | `""`                   | Raw Caddyfile content (mutually exclusive with template)            |
-| `xcaddy_caddyfile_template` | `""`                   | Path to Caddyfile Jinja2 template (mutually exclusive with content) |
-| `xcaddy_caddyfile_path`     | `/etc/caddy/Caddyfile` | Path where Caddyfile will be deployed                               |
-| `xcaddy_config_dir`         | `/etc/caddy`           | Caddy configuration directory                                       |
-| `xcaddy_data_dir`           | `/var/lib/caddy`       | Caddy data directory (certificates, etc.)                           |
+| Variable                          | Default                | Description                                                                                                                                                                                                                               |
+|-----------------------------------|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `xcaddy_caddyfile_content`        | `""`                   | Raw Caddyfile content (mutually exclusive with template)                                                                                                                                                                                  |
+| `xcaddy_caddyfile_template`       | `""`                   | Path to Caddyfile Jinja2 template (mutually exclusive                                                                                                                                                                                     |
+| with content)                     |                        |                                                                                                                                                                                                                                           |
+| `xcaddy_caddyfile_path`           | `/etc/caddy/Caddyfile` | Path where Caddyfile will be deployed                                                                                                                                                                                                     |
+ | `xcaddy_service_envfile_template` | `""`                   | Path to Caddy [service EnvironmentFile](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html) Jinja2 template. The environment variables defined within may also be referenced in the Caddyfile (e.g. `{env.MYVAR}`) |
+ | `xcaddy_service_envfile_path`     | `/etc/caddy/.env`      | Path where the Caddy service `EnvironmentFile` will be deployed (will be chmod `0600` to protect secrets/passwords)                                                                                                                       |
+| `xcaddy_config_dir`               | `/etc/caddy`           | Caddy configuration directory                                                                                                                                                                                                             |
+| `xcaddy_data_dir`                 | `/var/lib/caddy`       | Caddy data directory (certificates, etc.)                                                                                                                                                                                                 |
 
 ### Service
 
