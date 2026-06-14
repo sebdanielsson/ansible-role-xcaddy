@@ -12,6 +12,9 @@ Requires=network-online.target
 Type=notify
 User={{ xcaddy_user }}
 Group={{ xcaddy_group }}
+{% if xcaddy_environment_file | length > 0 %}
+EnvironmentFile=-{{ xcaddy_environment_file }}
+{% endif %}
 ExecStart={{ xcaddy_bin_path }} run --environ --config {{ xcaddy_caddyfile_path }}
 ExecReload={{ xcaddy_bin_path }} reload --config {{ xcaddy_caddyfile_path }}
 TimeoutStopSec=5s

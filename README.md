@@ -8,6 +8,8 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 - **Idempotent builds** - only rebuilds when Caddy version or modules change
 - **Caddyfile configuration** - supports both raw content and Jinja2 templates
 - **Systemd integration** with proper capabilities for binding to privileged ports
+- **Optional `EnvironmentFile`** to pass environment variables to the Caddy process
+- **Fully idempotent** - converges cleanly with no spurious reloads or restarts
 - **Config validation** before reloading to prevent broken deployments
 - **Multi-distro support** - consistent Go-based installation across all supported distros
 
@@ -46,12 +48,14 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 
 ### Service
 
-| Variable                 | Default | Description                             |
-| ------------------------ | ------- | --------------------------------------- |
-| `xcaddy_service_enabled` | `true`  | Enable Caddy service at boot            |
-| `xcaddy_service_started` | `true`  | Start Caddy service after configuration |
-| `xcaddy_user`            | `caddy` | User to run Caddy service               |
-| `xcaddy_group`           | `caddy` | Group for Caddy service                 |
+| Variable                   | Default | Description                                                                                                  |
+| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| `xcaddy_service_enabled`   | `true`  | Enable Caddy service at boot                                                                                 |
+| `xcaddy_service_started`   | `true`  | Start Caddy service after configuration                                                                      |
+| `xcaddy_user`              | `caddy` | User to run Caddy service                                                                                    |
+| `xcaddy_group`             | `caddy` | Group for Caddy service                                                                                      |
+| `xcaddy_environment_file`  | `""`    | Optional path for the systemd `EnvironmentFile=` directive (omitted when empty)                              |
+| `xcaddy_environment`       | `{}`    | Optional dict of environment variables; rendered to `xcaddy_environment_file` when both are set              |
 
 ### Paths
 
@@ -127,6 +131,31 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
           }
 ```
 
+### With an Environment File (DNS provider credentials)
+
+Pass secrets to Caddy via a systemd `EnvironmentFile` instead of embedding them
+in the Caddyfile. The role renders `xcaddy_environment` to the file when both
+variables are set; omit `xcaddy_environment` to manage the file out of band.
+
+```yaml
+- hosts: webservers
+  roles:
+    - role: sebdanielsson.xcaddy
+      vars:
+        xcaddy_modules:
+          - github.com/caddy-dns/cloudflare
+        xcaddy_environment_file: /etc/caddy/caddy.env
+        xcaddy_environment:
+          CF_API_TOKEN: "{{ vault_cf_api_token }}"
+        xcaddy_caddyfile_content: |
+          example.com {
+            tls {
+              dns cloudflare {env.CF_API_TOKEN}
+            }
+            reverse_proxy localhost:8080
+          }
+```
+
 ### Uninstall Caddy
 
 ```yaml
@@ -155,7 +184,11 @@ The role includes the following handlers:
 
 - **Validate Caddy config**: Runs `caddy validate` before reload
 - **Reload Caddy**: Reloads Caddy configuration (triggered by Caddyfile changes)
-- **Restart Caddy**: Restarts Caddy service (triggered by binary changes)
+- **Reload systemd daemon**: Runs `systemctl daemon-reload` (triggered only when the unit file changes)
+- **Restart Caddy**: Restarts Caddy service (triggered by binary, unit file, or environment file changes)
+
+Handlers only fire when the resource they watch actually changes, so a converged
+host re-runs with zero changes and no service disruption.
 
 ## Contributing
 

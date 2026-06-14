@@ -11,6 +11,9 @@
       :8080 {
         respond "OK"
       }
+    xcaddy_environment_file: /etc/caddy/caddy.env
+    xcaddy_environment:
+      CADDY_TEST_VAR: hello
   tasks:
     - name: Apply xcaddy role (initial build)
       ansible.builtin.include_role:
@@ -39,6 +42,9 @@
       :8080 {
         respond "OK"
       }
+    xcaddy_environment_file: /etc/caddy/caddy.env
+    xcaddy_environment:
+      CADDY_TEST_VAR: hello
   tasks:
     - name: Apply xcaddy role (idempotency check)
       ansible.builtin.include_role:
@@ -67,6 +73,9 @@
       :8080 {
         respond "OK"
       }
+    xcaddy_environment_file: /etc/caddy/caddy.env
+    xcaddy_environment:
+      CADDY_TEST_VAR: hello
   tasks:
     - name: Apply xcaddy role (version bump)
       ansible.builtin.include_role:
