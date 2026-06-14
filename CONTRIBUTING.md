@@ -90,7 +90,7 @@ file is not formatted.
 Check formatting (matches CI):
 
 ```sh
-go run github.com/google/yamlfmt/cmd/yamlfmt@latest -conf .yamlfmt.yaml -lint
+go run github.com/google/yamlfmt/cmd/yamlfmt@main -conf .yamlfmt.yaml -lint
 ```
 
 Apply formatting in place:
