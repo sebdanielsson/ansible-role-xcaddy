@@ -1,4 +1,17 @@
 ---
+- name: Deploy Caddy environment file
+  ansible.builtin.template:
+    src: caddy.env.j2
+    dest: "{{ xcaddy_environment_file }}"
+    owner: "{{ xcaddy_user }}"
+    group: "{{ xcaddy_group }}"
+    mode: "0640"
+  become: true
+  when:
+    - xcaddy_environment_file | length > 0
+    - xcaddy_environment | length > 0
+  notify: Restart Caddy
+
 - name: Deploy Caddy systemd service unit
   ansible.builtin.template:
     src: caddy.service.j2
@@ -7,12 +20,9 @@
     group: root
     mode: "0644"
   become: true
-  notify: Restart Caddy
-
-- name: Reload systemd daemon
-  ansible.builtin.systemd_service:
-    daemon_reload: true
-  become: true
+  notify:
+    - Reload systemd daemon
+    - Restart Caddy
 
 - name: Enable Caddy service
   ansible.builtin.systemd_service:

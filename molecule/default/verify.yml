@@ -101,6 +101,38 @@
         fail_msg: "Service file not found at /etc/systemd/system/caddy.service"
         success_msg: "Service file exists at /etc/systemd/system/caddy.service"
 
+    # Verify environment file and EnvironmentFile directive
+    - name: Read service unit file
+      ansible.builtin.slurp:
+        src: /etc/systemd/system/caddy.service
+      register: service_file_content
+
+    - name: Assert EnvironmentFile directive is present
+      ansible.builtin.assert:
+        that:
+          - "'EnvironmentFile=-/etc/caddy/caddy.env' in (service_file_content.content | b64decode)"
+        fail_msg: "EnvironmentFile directive not found in caddy.service unit"
+        success_msg: "EnvironmentFile directive is present in caddy.service unit"
+
+    - name: Check environment file exists
+      ansible.builtin.stat:
+        path: /etc/caddy/caddy.env
+      register: env_file
+
+    - name: Read environment file
+      ansible.builtin.slurp:
+        src: /etc/caddy/caddy.env
+      register: env_file_content
+      when: env_file.stat.exists
+
+    - name: Assert environment file is rendered correctly
+      ansible.builtin.assert:
+        that:
+          - env_file.stat.exists
+          - "'CADDY_TEST_VAR=\"hello\"' in (env_file_content.content | default('') | b64decode)"
+        fail_msg: "Environment file missing or does not contain the expected variable"
+        success_msg: "Environment file exists and contains the expected variable"
+
     # Verify caddy user and group
     - name: Check caddy user exists
       ansible.builtin.getent:

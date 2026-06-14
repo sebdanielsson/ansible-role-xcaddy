@@ -37,6 +37,23 @@ xcaddy_service_started: true
 xcaddy_user: caddy
 xcaddy_group: caddy
 
+# Optional path to an environment file referenced by the systemd unit
+# (EnvironmentFile=). When set, the directive is added to caddy.service.
+# The reference is optional (prefixed with "-"), so a missing file does not
+# fail the service. Leave empty to omit the directive entirely.
+# Example:
+#   xcaddy_environment_file: /etc/caddy/caddy.env
+xcaddy_environment_file: ""
+
+# Optional environment variables for the Caddy process.
+# When non-empty AND xcaddy_environment_file is set, the role renders these
+# key/value pairs to xcaddy_environment_file. Leave empty to manage the
+# environment file out of band (e.g. with secrets from another source).
+# Example:
+#   xcaddy_environment:
+#     CF_API_TOKEN: "{{ vault_cf_api_token }}"
+xcaddy_environment: {}
+
 # Path to install the Caddy binary
 xcaddy_bin_path: /usr/local/bin/caddy
 
