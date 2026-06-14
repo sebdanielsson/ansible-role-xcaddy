@@ -129,7 +129,7 @@
       ansible.builtin.assert:
         that:
           - env_file.stat.exists
-          - "'CADDY_TEST_VAR=hello' in (env_file_content.content | b64decode)"
+          - "'CADDY_TEST_VAR=\"hello\"' in (env_file_content.content | default('') | b64decode)"
         fail_msg: "Environment file missing or does not contain the expected variable"
         success_msg: "Environment file exists and contains the expected variable"
 
