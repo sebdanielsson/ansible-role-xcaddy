@@ -59,7 +59,8 @@ molecule --version
 
 ## Linting
 
-CI runs two linters; run both before pushing.
+CI enforces two checks: `ansible-lint` and a `yamlfmt` formatting check. Run both
+before pushing.
 
 ### ansible-lint
 
@@ -69,17 +70,16 @@ The role targets the **production** profile with zero findings.
 ansible-lint
 ```
 
-Configuration lives in [`.ansible-lint`](.ansible-lint).
+Configuration lives in [`.ansible-lint`](.ansible-lint). `ansible-lint` also runs
+`yamllint` internally using the rules in [`.yamllint.yaml`](.yamllint.yaml), so YAML
+style is covered as part of this check.
 
-### YAML
-
-`yamllint` rules are defined in [`.yamllint.yaml`](.yamllint.yaml):
+You can optionally run `yamllint` on its own for a quick YAML-only pass (not a
+separate CI step):
 
 ```sh
 yamllint .
 ```
-
-CI additionally enforces YAML *formatting* with `yamlfmt` (see below).
 
 ## Formatting
 
@@ -90,13 +90,13 @@ file is not formatted.
 Check formatting (matches CI):
 
 ```sh
-go run github.com/google/yamlfmt/cmd/yamlfmt@latest -conf .yamlfmt.yaml -lint
+go run github.com/google/yamlfmt/cmd/yamlfmt@main -conf .yamlfmt.yaml -lint
 ```
 
 Apply formatting in place:
 
 ```sh
-go run github.com/google/yamlfmt/cmd/yamlfmt@latest -conf .yamlfmt.yaml
+go run github.com/google/yamlfmt/cmd/yamlfmt@main -conf .yamlfmt.yaml
 ```
 
 > If you have `yamlfmt` installed on your `PATH`, you can call it directly
