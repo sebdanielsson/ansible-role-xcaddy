@@ -157,41 +157,11 @@ The role includes the following handlers:
 - **Reload Caddy**: Reloads Caddy configuration (triggered by Caddyfile changes)
 - **Restart Caddy**: Restarts Caddy service (triggered by binary changes)
 
-## Setup development environment
+## Contributing
 
-### 1. Clone the Repository
-
-```sh
-git clone https://github.com/sebdanielsson/ansible-role-xcaddy.git
-cd ansible-role-xcaddy
-```
-
-### 2. Create and Activate Virtual Environment
-
-```sh
-uv venv
-source .venv/bin/activate
-```
-
-### 3. Install Python Dependencies
-
-```sh
-uv pip install -r requirements.txt --force-reinstall
-```
-
-### 4. Install Ansible Collections and Roles
-
-```sh
-ansible-galaxy install -r requirements.yml --force
-```
-
-### 5. Verify Installation
-
-```sh
-ansible --version
-ansible-lint --version
-yamllint --version
-```
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for how to set
+up a development environment, run the linters and formatters, and execute the
+Molecule test suite locally.
 
 ## License
 
