@@ -1,7 +1,14 @@
 ---
 - name: Validate Caddy config
   ansible.builtin.command:
-    cmd: "{{ xcaddy_bin_path }} validate --config {{ xcaddy_caddyfile_path }}"
+    argv: "{{ xcaddy_validate_argv_base + xcaddy_validate_envfile_argv }}"
+  vars:
+    xcaddy_validate_argv_base:
+      - "{{ xcaddy_bin_path }}"
+      - validate
+      - --config
+      - "{{ xcaddy_caddyfile_path }}"
+    xcaddy_validate_envfile_argv: "{{ ['--envfile', xcaddy_environment_file] if xcaddy_environment_file | length > 0 else [] }}"
   become: true
   changed_when: false
   listen: Reload Caddy
