@@ -15,11 +15,18 @@ This role installs Caddy using xcaddy on Linux systems. It builds a custom Caddy
 
 ## Requirements
 
-- systemd init system
-- **Debian family** (Debian, Ubuntu, Raspbian) - uses Go package + `go install`
-- **RedHat family** (Fedora, RHEL, CentOS, AlmaLinux, RockyLinux) - uses Go package + `go install`
-- **Arch Linux family** (Arch Linux, Manjaro) - uses Go package + `go install`
-- **Other distros** - uses Go package + `go install` (best effort)
+- A systemd init system
+- `ansible-core` >= 2.17.14
+
+Installation is deliberately distro-agnostic — there are no per-distro package paths. The role
+resolves the latest stable Go from the [go.dev release API](https://go.dev/dl/?mode=json) (or the
+version pinned in `xcaddy_go_version`), installs the toolchain to `/usr/local/go`, then uses it to
+`go install` xcaddy and build Caddy. Any systemd distro on `amd64` or `arm64` that can fetch and
+extract a tarball should work.
+
+CI runs the Molecule suite against Debian 13, Ubuntu 24.04, Fedora 43, and RHEL UBI 10 on every PR.
+Arch Linux and Manjaro are expected to work through the same generic path but aren't covered by the
+test matrix.
 
 ## Role Variables
 
@@ -195,6 +202,14 @@ host re-runs with zero changes and no service disruption.
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for how to set
 up a development environment, run the linters and formatters, and execute the
 Molecule test suite locally.
+
+## Releases
+
+Releases are automated with [Release Please](https://github.com/googleapis/release-please) and
+published to
+[Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/sebdanielsson/xcaddy/). The version
+and [`CHANGELOG.md`](CHANGELOG.md) are derived from conventional commits — see
+[CONTRIBUTING.md](CONTRIBUTING.md#releases).
 
 ## License
 

@@ -148,6 +148,21 @@ MOLECULE_DOCKER_IMAGE=redhat/ubi10 MOLECULE_DOCKER_TAG=10.1 molecule test
 When adding a feature, extend `converge.yml` and/or `verify.yml` so the behaviour
 is covered.
 
+## Commit messages
+
+Commits on `main` must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+— the version number and changelog are derived from them (see [Releases](#releases)).
+PRs are squash-merged, so it is the **PR title** that ends up on `main` and has to
+conform. CI enforces this
+([`Lint PR` workflow](.github/workflows/lint-pr.yml)); edit the title and the check re-runs.
+
+| Type | Effect on the next release |
+| --- | --- |
+| `feat: ...` | minor bump, listed under *Features* |
+| `fix: ...` | patch bump, listed under *Bug Fixes* |
+| `feat!: ...` or a `BREAKING CHANGE:` footer | major bump |
+| `docs:`, `chore:`, `ci:`, `test:`, `refactor:` | no release |
+
 ## Pull requests
 
 1. Create a topic branch off `main` (e.g. `feat/...`, `fix/...`, `docs/...`).
@@ -155,10 +170,17 @@ is covered.
 3. Run the linters, formatter, and `molecule test` locally.
 4. Document new variables in [`README.md`](README.md) and the `defaults/main.yml`
    comments.
-5. Open a PR against `main`. CI must pass before merge.
+5. Open a PR against `main`, titled as a conventional commit. CI must pass before merge.
 
 ## Releases
 
-Releases are automated: pushing a Git tag triggers the
-[`Release` workflow](.github/workflows/publish.yml), which imports the role to
-[Ansible Galaxy](https://galaxy.ansible.com/). Maintainers handle tagging.
+Releases are automated with [Release Please](https://github.com/googleapis/release-please).
+Every push to `main` updates a standing **release PR** that bumps the version and
+[`CHANGELOG.md`](CHANGELOG.md) based on the conventional commits since the last release.
+
+Merging that PR is the release: it tags the commit, publishes the GitHub release, and
+imports the role to [Ansible Galaxy](https://galaxy.ansible.com/) — all in the
+[`Release Please` workflow](.github/workflows/release-please.yml). Maintainers merge the
+release PR; nobody creates tags by hand.
+
+To force a specific version, add a `Release-As: 1.2.3` footer to a commit on `main`.
