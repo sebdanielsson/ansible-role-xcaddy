@@ -153,7 +153,8 @@ is covered.
 Commits on `main` must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 — the version number and changelog are derived from them (see [Releases](#releases)).
 PRs are squash-merged, so it is the **PR title** that ends up on `main` and has to
-conform.
+conform. CI enforces this
+([`Lint PR` workflow](.github/workflows/lint-pr.yml)); edit the title and the check re-runs.
 
 | Type | Effect on the next release |
 | --- | --- |
