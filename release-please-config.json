@@ -3,7 +3,6 @@
   "packages": {
     ".": {
       "release-type": "simple",
-      "include-commit-authors": true,
       "package-name": "ansible-role-xcaddy",
       "include-component-in-tag": false
     }
