@@ -29,3 +29,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           validateSingleCommit: true
+          # The conventionalcommits preset rejects "ci:" titles even though the action's own
+          # error message lists ci as available, so pass the preset's types plus ci explicitly.
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert

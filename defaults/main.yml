@@ -2,7 +2,7 @@
 # State of the xcaddy role: present, latest, or absent
 xcaddy_state: present
 
-# Caddy version to build (e.g., "v2.10.2" or "latest")
+# Caddy version to build (e.g., "v2.11.4" or "latest")
 xcaddy_caddy_version: latest
 
 # List of Caddy modules to include in the build

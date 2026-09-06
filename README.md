@@ -35,7 +35,7 @@ test matrix.
 | Variable               | Default   | Description                                          |
 | ---------------------- | --------- | ---------------------------------------------------- |
 | `xcaddy_state`         | `present` | Role state: `present`, `latest`, or `absent`         |
-| `xcaddy_caddy_version` | `latest`  | Caddy version to build (e.g., `v2.10.2` or `latest`) |
+| `xcaddy_caddy_version` | `latest`  | Caddy version to build (e.g., `v2.11.4` or `latest`) |
 
 ### Modules
 
@@ -126,7 +126,7 @@ test matrix.
   roles:
     - role: sebdanielsson.xcaddy
       vars:
-        xcaddy_caddy_version: "v2.10.2"
+        xcaddy_caddy_version: "v2.11.4"
         xcaddy_modules:
           - github.com/caddy-dns/cloudflare@v0.2.2
         xcaddy_caddyfile_content: |
