@@ -4,7 +4,7 @@
   hosts: all
   become: true
   vars:
-    xcaddy_caddy_version: "v2.10.2"
+    xcaddy_caddy_version: "v2.11.4"
     xcaddy_modules:
       - github.com/caddy-dns/cloudflare@v0.2.1
     xcaddy_caddyfile_content: |
@@ -35,7 +35,7 @@
   hosts: all
   become: true
   vars:
-    xcaddy_caddy_version: "v2.10.2"
+    xcaddy_caddy_version: "v2.11.4"
     xcaddy_modules:
       - github.com/caddy-dns/cloudflare@v0.2.1
     xcaddy_caddyfile_content: |
@@ -66,7 +66,7 @@
   hosts: all
   become: true
   vars:
-    xcaddy_caddy_version: "v2.10.2"
+    xcaddy_caddy_version: "v2.11.4"
     xcaddy_modules:
       - github.com/caddy-dns/cloudflare@v0.2.2
     xcaddy_caddyfile_content: |
