@@ -3,7 +3,7 @@
   hosts: all
   become: true
   vars:
-    expected_caddy_version: "v2.10.2"
+    expected_caddy_version: "v2.11.4"
     expected_module: "github.com/caddy-dns/cloudflare"
   tasks:
     # Verify Caddy binary
