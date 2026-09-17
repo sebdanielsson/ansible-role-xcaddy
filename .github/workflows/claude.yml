@@ -24,7 +24,7 @@ jobs:
       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     name: Run Claude
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v7
